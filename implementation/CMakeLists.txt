@@ -14,14 +14,25 @@ install(
 )
 
 
-add_executable(state_publisher src/state_publisher.cpp)
+include_directories(
+  include)
+
+
+add_library(state_publisher_library src/state_publisher.cpp)
 ament_target_dependencies(
-   state_publisher
-   geometry_msgs
+   state_publisher_library 
+   geometry_msgs 
    sensor_msgs
    rclcpp
-   tf2_ros
+   tf2_ros)
+
+
+add_executable(state_publisher src/state_publisher_node.cpp)
+ament_target_dependencies(state_publisher rclcpp
 )
+
+
+target_link_libraries(state_publisher state_publisher_library)
 
 
 # add_executable(tf2_listener src/tf2_listener.cpp)
@@ -33,6 +44,11 @@ ament_target_dependencies(
 #     tf2_ros
 #     turtlesim
 # )
+
+
+install(
+  DIRECTORY include/
+  DESTINATION include/${PROJECT_NAME}/)
 
 
 install(TARGETS
