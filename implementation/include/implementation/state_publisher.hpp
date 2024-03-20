@@ -27,7 +27,10 @@ private:
     const double PI = 3.141592653589793238463;
     const double degree = PI / 180.0;
 
-    geometry_msgs::msg::TransformStamped odom_trans;
+    rclcpp::Time now;
+    double time;
+
+    geometry_msgs::msg::TransformStamped t;
 
     void transform(std::string header_id, std::string child_id, double x, double y, double z, double roll, double pitch, double yaw);
 

@@ -15,33 +15,33 @@ StatePublisher::~StatePublisher() {}
 
 void StatePublisher::transform(std::string header_id, std::string child_id, double x, double y, double z, double roll, double pitch, double yaw)
 {
-    rclcpp::Time now = this->get_clock()->now();
+    now = this->get_clock()->now();
     
-    odom_trans.header.stamp = now;
-    odom_trans.header.frame_id = header_id;
-    odom_trans.child_frame_id = child_id;
+    t.header.stamp = now;
+    t.header.frame_id = header_id;
+    t.child_frame_id = child_id;
 
-    odom_trans.transform.translation.x = x;
-    odom_trans.transform.translation.y = y;
-    odom_trans.transform.translation.z = z;
+    t.transform.translation.x = x;
+    t.transform.translation.y = y;
+    t.transform.translation.z = z;
 
     tf2::Quaternion q;
     q.setRPY(roll, pitch, yaw);
-    odom_trans.transform.rotation.x = q.x();
-    odom_trans.transform.rotation.y = q.y();
-    odom_trans.transform.rotation.z = q.z();
-    odom_trans.transform.rotation.w = q.w();
+    t.transform.rotation.x = q.x();
+    t.transform.rotation.y = q.y();
+    t.transform.rotation.z = q.z();
+    t.transform.rotation.w = q.w();
 
-    tf_broadcaster->sendTransform(odom_trans);
+    tf_broadcaster->sendTransform(t);
 }
 
 
 void StatePublisher::timer_callback()
 {
-    rclcpp::Time now = this->get_clock()->now();
-    double time = now.seconds() * PI;
+    now = this->get_clock()->now();
+    time = now.seconds() * PI;
 
-    transform("base_link", "turret", 0, 0, 0.045, 0, 0, PI / 2);
+    transform("base_link", "turret", 0, 0, 0.045, 0, 0, 0);
     transform("turret", "upperarm", 0, 0, 0.02, 0, 0, 0);
     transform("upperarm", "forearm", 0, 0, 0.18, 0, PI / 2, 0);
     transform("forearm", "wrist", 0, 0, 0.20, 0, 0, 0);
