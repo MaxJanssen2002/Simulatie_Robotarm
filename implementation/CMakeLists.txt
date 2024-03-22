@@ -27,9 +27,8 @@ ament_target_dependencies(
    tf2_ros)
 
 
-add_executable(state_publisher src/state_publisher_node.cpp)
-ament_target_dependencies(state_publisher rclcpp
-)
+add_executable(state_publisher src/state_publisher_node.cpp src/joint.cpp)
+ament_target_dependencies(state_publisher rclcpp)
 
 
 target_link_libraries(state_publisher state_publisher_library)
