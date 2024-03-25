@@ -10,7 +10,7 @@ StatePublisher::StatePublisher()
     joint_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
     commandSubsription = this->create_subscription<std_msgs::msg::String>("/arm_command", 10, std::bind(&StatePublisher::PWM_command_callback, this, std::placeholders::_1));
     tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
-    timer = this->create_wall_timer(100ms, std::bind(&StatePublisher::timer_callback, this));
+    timer = this->create_wall_timer(33ms, std::bind(&StatePublisher::timer_callback, this));
 
     createJoints();
 }
@@ -22,12 +22,12 @@ StatePublisher::~StatePublisher() {}
 void StatePublisher::createJoints()
 {
     joints.emplace_back(0, "base_link", "turret", JointState{0.0, 0.0, 0.045, 0.0, 0.0, 0.0}, YAW, PI / -2, PI / 2);
-    joints.emplace_back(1, "turret", "upperarm", JointState{0.0, 0.0, 0.02, 0.0, 0.0, 0.0}, PITCH, PI / -6, PI / 2);
+    joints.emplace_back(1, "turret", "upperarm", JointState{0.0, 0.0, 0.02, 0.0, 0.0, 0.0}, PITCH, PI / -3, PI / 2);
     joints.emplace_back(2, "upperarm", "forearm", JointState{0.0, 0.0, 0.18, 0.0, PI / 2, 0.0}, PITCH, 0, PI * 0.75);
     joints.emplace_back(3, "forearm", "wrist", JointState{0.0, 0.0, 0.20, 0.0, 0.0, 0.0}, PITCH, PI / -2, PI / 2);
     joints.emplace_back(4, "wrist", "hand", JointState{0.0, 0.0, 0.06, 0.0, 0.0, 0.0}, YAW, PI / -2, PI / 2);
-    joints.emplace_back(5, "hand", "gripper_left", JointState{0.0, 0.025, 0.025, 0.0, 0.0, 0.0}, Y, 0.33, 0.01);
-    joints.emplace_back(5, "hand", "gripper_right", JointState{0.0, -0.025, 0.025, 0.0, 0.0, 0.0}, Y, -0.33, -0.01);
+    joints.emplace_back(5, "hand", "gripper_left", JointState{0.0, 0.025, 0.025, 0.0, 0.0, 0.0}, Y, 0.033, 0.01);
+    joints.emplace_back(5, "hand", "gripper_right", JointState{0.0, -0.025, 0.025, 0.0, 0.0, 0.0}, Y, -0.033, -0.01);
 }
 
 
@@ -58,10 +58,9 @@ void StatePublisher::timer_callback()
     now = this->get_clock()->now();
     time = now.seconds() * PI;
 
-    joints.at(2).moveJoint(500 * cos(time) + 1500);
-
     for (Joint& joint : joints)
     {
+        joint.move();
         transform(joint.getHeader_id(), joint.getChild_id(), joint.getJointState());
     }
 
@@ -78,7 +77,10 @@ void StatePublisher::PWM_command_callback(const std_msgs::msg::String & msg)
 
     if (command == "stop" || command == "Stop")
     {
-        //Stop
+        for (auto& joint : joints)
+        {
+            joint.stop();
+        }
         return;
     }
 
@@ -86,14 +88,16 @@ void StatePublisher::PWM_command_callback(const std_msgs::msg::String & msg)
     {
         return;
     }
-    
+
     fullcommand movementsAndTime = commandParser.getMovementsAndTime();
 
     for (const auto& movement : movementsAndTime.first)
     {
-        std::cout << "Index: " << std::to_string(movement.first) << "   PWM: " << std::to_string(movement.second) << std::endl;
+        for (auto& joint : joints)
+        {
+            joint.adjustGoal(movement.first, movement.second, movementsAndTime.second);
+        }
     }
-    std::cout << "Time: " << std::to_string(movementsAndTime.second) << std::endl;
 }
 
 

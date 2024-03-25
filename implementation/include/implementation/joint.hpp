@@ -8,6 +8,7 @@
 
 #define MINIMUM_PWM 500
 #define MAXIMUM_PWM 2500
+#define DELTA_T 33
 
 
 static double PI = 3.141592653589793238463;
@@ -43,7 +44,11 @@ public:
           const double a_maximum);
     ~Joint();
 
-    void moveJoint(const double newValue);
+    void adjustGoal(const unsigned char a_index, const double newValue, const double duration);
+
+    void move();
+
+    void stop();
 
     const JointState& getJointState() const;
 
@@ -52,6 +57,8 @@ public:
     const std::string& getChild_id() const;
 
 private:
+
+    void refreshJointState();
 
     void printError(const double& newValue);
 
@@ -69,6 +76,13 @@ private:
 
     const double minimum;
     const double maximum;
+
+    double startPWM;
+    double goalPWM;
+    double movementDuration;
+    double variablePosition;
+
+    bool moving;
 
 };
 

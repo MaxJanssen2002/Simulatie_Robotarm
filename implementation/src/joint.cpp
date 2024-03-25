@@ -16,48 +16,100 @@ Joint::Joint(const unsigned char a_index,
   jointState(a_jointState),
   variable(a_variable),
   minimum(a_minimum),
-  maximum(a_maximum)
+  maximum(a_maximum),
+  startPWM(0),
+  goalPWM(0),
+  movementDuration(0),
+  variablePosition(0),
+  moving(false)
 {
+    switch (variable)
+    {
+        case X:
+            variablePosition = jointState.x;
+            break;
+        case Y:
+            variablePosition = jointState.y;
+            break;
+        case Z:
+            variablePosition = jointState.z;
+            break;
+        case ROLL:
+            variablePosition = jointState.roll;
+            break;
+        case PITCH:
+            variablePosition = jointState.pitch;
+            break;
+        case YAW:
+            variablePosition = jointState.yaw;
+            break;
+        default:
+            // Nothing
+            break;
+    }
+    startPWM = variablePosition;
 }
 
 
 Joint::~Joint() {}
 
 
-void Joint::moveJoint(const double newValue)
+void Joint::adjustGoal(const unsigned char a_index, const double newValue, const double duration)
 {
+    if (a_index != index)
+    {
+        return;
+    }
+
     if (newValue < MINIMUM_PWM || newValue > MAXIMUM_PWM)
     {
         printError(newValue);
         return;
     }
 
-    double mappedValue = map(newValue, MINIMUM_PWM, MAXIMUM_PWM, minimum, maximum);
+    goalPWM = map(newValue, MINIMUM_PWM, MAXIMUM_PWM, minimum, maximum);
+    movementDuration = duration;
+    moving = true;
+}
 
-    switch (variable)
+
+void Joint::move()
+{
+    if (!moving)
     {
-        case X:
-            jointState.x = mappedValue;
-            break;
-        case Y:
-            jointState.y = mappedValue;
-            break;
-        case Z:
-            jointState.z = mappedValue;
-            break;
-        case ROLL:
-            jointState.roll = mappedValue;
-            break;
-        case PITCH:
-            jointState.pitch = mappedValue;
-            break;
-        case YAW:
-            jointState.yaw = mappedValue;
-            break;
-        default:
-            // Nothing
-            break;
+        return;
     }
+
+    if (variablePosition > goalPWM)
+    {
+        variablePosition -= (startPWM - goalPWM) / movementDuration * DELTA_T;
+        if (variablePosition < goalPWM)
+        {
+            variablePosition = goalPWM;
+        }
+    }
+    else if (variablePosition < goalPWM)
+    {
+        variablePosition += (goalPWM - startPWM) / movementDuration * DELTA_T;
+        if (variablePosition > goalPWM)
+        {
+            variablePosition = goalPWM;
+        }
+    }
+
+    if (variablePosition == goalPWM)
+    {
+        startPWM = variablePosition;
+        moving = false;
+    }
+
+    refreshJointState();
+}
+
+
+void Joint::stop()
+{
+    goalPWM = variablePosition;
 }
 
 
@@ -76,6 +128,35 @@ const std::string& Joint::getHeader_id() const
 const std::string& Joint::getChild_id() const
 {
     return child_id;
+}
+
+
+void Joint::refreshJointState()
+{
+    switch (variable)
+    {
+        case X:
+            jointState.x = variablePosition;
+            break;
+        case Y:
+            jointState.y = variablePosition;
+            break;
+        case Z:
+            jointState.z = variablePosition;
+            break;
+        case ROLL:
+            jointState.roll = variablePosition;
+            break;
+        case PITCH:
+            jointState.pitch = variablePosition;
+            break;
+        case YAW:
+            jointState.yaw = variablePosition;
+            break;
+        default:
+            // Nothing
+            break;
+    }
 }
 
 

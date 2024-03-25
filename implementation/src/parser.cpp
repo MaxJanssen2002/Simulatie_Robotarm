@@ -20,7 +20,7 @@ bool Parser::parseCommand(std::string& command)
     if(std::count_if(command.begin(), command.end(), [](unsigned char c) { return c == 'T'; }) != 1)
     {
         std::cout << "The command should contain one 'T'." << std::endl;
-        return;
+        return false;
     }
 
     std::vector<pair> movements;
@@ -41,7 +41,7 @@ bool Parser::parseCommand(std::string& command)
             {
                 if (!parseMovementCommand(result, movements)) // If the function returns false, there's an error, so stop parsing
                 {
-                    return;
+                    return false;
                 }
             }
         }
@@ -49,10 +49,11 @@ bool Parser::parseCommand(std::string& command)
 
     if (!checkValidity(movements, time))
     {
-        return;
+        return false;
     }
 
     movementsAndTime = std::make_pair(movements, time);
+    return true;
 }
 
 
