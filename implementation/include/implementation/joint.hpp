@@ -55,7 +55,7 @@ private:
 
     void printError(const double& newValue);
 
-    double map(const double& originalNumber, const double& in_min, const double& in_max, const double& out_min, const double& out_max);
+    double map(const double originalNumber, const double in_min, const double in_max, const double out_min, const double out_max);
 
     const unsigned char index;
 

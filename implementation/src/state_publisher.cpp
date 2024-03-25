@@ -1,10 +1,14 @@
 #include "implementation/state_publisher.hpp"
 
+#include <sstream>
+#include <algorithm>
+
 
 StatePublisher::StatePublisher()
 : Node("state_publisher")
 {
     joint_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
+    commandSubsription = this->create_subscription<std_msgs::msg::String>("/arm_command", 10, std::bind(&StatePublisher::PWM_command_callback, this, std::placeholders::_1));
     tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
     timer = this->create_wall_timer(100ms, std::bind(&StatePublisher::timer_callback, this));
 
@@ -54,10 +58,42 @@ void StatePublisher::timer_callback()
     now = this->get_clock()->now();
     time = now.seconds() * PI;
 
-    joints.at(0).moveJoint(500 * cos(time) + 1500);
+    joints.at(2).moveJoint(500 * cos(time) + 1500);
+
+    for (Joint& joint : joints)
+    {
+        transform(joint.getHeader_id(), joint.getChild_id(), joint.getJointState());
+    }
 
     auto joint_state = sensor_msgs::msg::JointState();
     joint_state.name = {"base_link2turret", "turret2upperarm", "upperarm2forearm", "forearm2wrist", "wrist2hand", "gripper_left2hand", "gripper_right2hand"};
     joint_state.position = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
     joint_pub->publish(joint_state);
 }
+
+
+void StatePublisher::PWM_command_callback(const std_msgs::msg::String & msg)
+{
+    std::string command = msg.data;
+
+    if (command == "stop" || command == "Stop")
+    {
+        //Stop
+        return;
+    }
+
+    if (!commandParser.parseCommand(command))
+    {
+        return;
+    }
+    
+    fullcommand movementsAndTime = commandParser.getMovementsAndTime();
+
+    for (const auto& movement : movementsAndTime.first)
+    {
+        std::cout << "Index: " << std::to_string(movement.first) << "   PWM: " << std::to_string(movement.second) << std::endl;
+    }
+    std::cout << "Time: " << std::to_string(movementsAndTime.second) << std::endl;
+}
+
+
