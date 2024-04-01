@@ -1,0 +1,13 @@
+<robot name="cup">
+    <link name="cup_base_link">
+		<visual>
+			<geometry>
+				<cylinder length="0.04" radius="0.02" />
+			</geometry>
+			<material name="red">
+				<color rgba="1 0 0 1" />
+			</material>
+			<origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+		</visual>
+	</link>
+</robot>

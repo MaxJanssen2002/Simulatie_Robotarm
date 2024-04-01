@@ -9,7 +9,8 @@ Joint::Joint(const unsigned char a_index,
              const JointState& a_jointState,
              const Movable a_variable,
              const double a_minimum,
-             const double a_maximum)
+             const double a_maximum,
+             const double a_timeInterval)
 : index(a_index),
   header_id(a_header_id), 
   child_id(a_child_id),
@@ -21,6 +22,7 @@ Joint::Joint(const unsigned char a_index,
   goalPWM(0),
   movementDuration(0),
   variablePosition(0),
+  timeInterval(a_timeInterval),
   moving(false)
 {
     switch (variable)
@@ -82,7 +84,7 @@ void Joint::move()
 
     if (variablePosition > goalPWM)
     {
-        variablePosition -= (startPWM - goalPWM) / movementDuration * DELTA_T;
+        variablePosition -= (startPWM - goalPWM) / movementDuration * timeInterval;
         if (variablePosition < goalPWM)
         {
             variablePosition = goalPWM;
@@ -90,7 +92,7 @@ void Joint::move()
     }
     else if (variablePosition < goalPWM)
     {
-        variablePosition += (goalPWM - startPWM) / movementDuration * DELTA_T;
+        variablePosition += (goalPWM - startPWM) / movementDuration * timeInterval;
         if (variablePosition > goalPWM)
         {
             variablePosition = goalPWM;

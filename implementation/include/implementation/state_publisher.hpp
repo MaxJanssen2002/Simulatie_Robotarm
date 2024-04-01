@@ -21,6 +21,9 @@
 #include "parser.hpp"
 
 
+#define TIME_INTERVAL 33
+
+
 using namespace std::chrono_literals;
 
 
@@ -51,7 +54,7 @@ private:
     tf2::Quaternion q;
 
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_pub;
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr commandSubsription;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr commandSubscription;
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     rclcpp::TimerBase::SharedPtr timer;
 
