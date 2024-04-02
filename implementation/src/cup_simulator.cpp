@@ -1,6 +1,5 @@
 #include "implementation/cup_simulator.hpp"
-
-#include <iostream>
+#include "implementation/mathUtils.hpp"
 
 
 CupSimulator::CupSimulator()
@@ -99,15 +98,15 @@ void CupSimulator::checkHeldByGripper()
     left_gripper_position = tf_buffer->lookupTransform("odom", "gripper_left", tf2::TimePointZero);
     right_gripper_position = tf_buffer->lookupTransform("odom", "gripper_right", tf2::TimePointZero);
 
-    double distanceToLeftGripper = pythagoreanTheorem(left_gripper_position.transform.translation.x - state.x,
-                                                      left_gripper_position.transform.translation.y - state.y,
-                                                      left_gripper_position.transform.translation.z - state.z);
-    double distanceToRightGripper = pythagoreanTheorem(right_gripper_position.transform.translation.x - state.x,
-                                                       right_gripper_position.transform.translation.y - state.y,
-                                                       right_gripper_position.transform.translation.z - state.z);
-    double distanceBetweenGrippers = pythagoreanTheorem(left_gripper_position.transform.translation.x - right_gripper_position.transform.translation.x,
-                                                        left_gripper_position.transform.translation.y - right_gripper_position.transform.translation.y,
-                                                        left_gripper_position.transform.translation.z - right_gripper_position.transform.translation.z);
+    double distanceToLeftGripper = MathUtils::pythagoreanTheorem(left_gripper_position.transform.translation.x - state.x,
+                                                                 left_gripper_position.transform.translation.y - state.y,
+                                                                 left_gripper_position.transform.translation.z - state.z);
+    double distanceToRightGripper = MathUtils::pythagoreanTheorem(right_gripper_position.transform.translation.x - state.x,
+                                                                  right_gripper_position.transform.translation.y - state.y,
+                                                                  right_gripper_position.transform.translation.z - state.z);
+    double distanceBetweenGrippers = MathUtils::pythagoreanTheorem(left_gripper_position.transform.translation.x - right_gripper_position.transform.translation.x,
+                                                                   left_gripper_position.transform.translation.y - right_gripper_position.transform.translation.y,
+                                                                   left_gripper_position.transform.translation.z - right_gripper_position.transform.translation.z);
 
     if (distanceToLeftGripper <= MAXIMUM_DISTANCE_TO_GRIPPER && 
         distanceToRightGripper <= MAXIMUM_DISTANCE_TO_GRIPPER && 
@@ -119,12 +118,6 @@ void CupSimulator::checkHeldByGripper()
     {
         heldByGripper = false;
     }
-}
-
-
-double CupSimulator::pythagoreanTheorem(double a, double b, double c)
-{
-    return sqrt(a * a + b * b + c * c);
 }
 
 

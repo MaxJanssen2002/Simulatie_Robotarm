@@ -49,17 +49,12 @@ private:
 
     void checkHeldByGripper();
 
-    double pythagoreanTheorem(double a, double b, double c);
-
     void updateFromGripper();
 
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener;
     std::shared_ptr<tf2_ros::Buffer> tf_buffer;
     rclcpp::TimerBase::SharedPtr timer;
-
-
-    const double PI = 3.141592653589793238463;
 
     const double gravitationalAcceleration = 9.81;
     double fallingSpeed;

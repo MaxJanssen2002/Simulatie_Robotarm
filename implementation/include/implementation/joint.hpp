@@ -10,9 +10,6 @@
 #define MAXIMUM_PWM 2500
 
 
-static double PI = 3.141592653589793238463;
-
-
 struct JointState
 {
     double x;
@@ -34,7 +31,7 @@ class Joint
 {
 public:
 
-    Joint(const unsigned char a_index,
+    Joint(const signed char a_index,
           const std::string& a_header_id, 
           const std::string& a_child_id, 
           const JointState& a_jointState,
@@ -44,7 +41,7 @@ public:
           const double a_timeInterval);
     ~Joint();
 
-    void adjustGoal(const unsigned char a_index, const double newValue, const double duration);
+    void adjustGoal(const signed char a_index, const double newValue, const double duration);
 
     void move();
 
@@ -62,9 +59,7 @@ private:
 
     void printError(const double& newValue);
 
-    double map(const double originalNumber, const double in_min, const double in_max, const double out_min, const double out_max);
-
-    const unsigned char index;
+    const signed char index;
 
     const std::string header_id;
     const std::string child_id;

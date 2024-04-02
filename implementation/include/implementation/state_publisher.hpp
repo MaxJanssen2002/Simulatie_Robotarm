@@ -39,8 +39,6 @@ private:
 
     void PWM_command_callback(const std_msgs::msg::String & msg);
 
-    const double PI = 3.141592653589793238463;
-
     rclcpp::Time now;
     double time;
 

@@ -1,4 +1,5 @@
 #include "implementation/state_publisher.hpp"
+#include "implementation/mathUtils.hpp"
 
 #include <sstream>
 #include <algorithm>
@@ -20,14 +21,14 @@ StatePublisher::~StatePublisher() {}
 
 void StatePublisher::createJoints()
 {
-    joints.emplace_back(6, "odom",      "base_link",     JointState{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},      PITCH, PI / -2, PI / 2,    TIME_INTERVAL);
-    joints.emplace_back(0, "base_link", "turret",        JointState{0.0, 0.0, 0.045, 0.0, 0.0, 0.0},    YAW,   PI / -2, PI / 2,    TIME_INTERVAL);
-    joints.emplace_back(1, "turret",    "upperarm",      JointState{0.0, 0.0, 0.02, 0.0, 0.0, 0.0},     PITCH, PI / -3, PI / 2,    TIME_INTERVAL);
-    joints.emplace_back(2, "upperarm",  "forearm",       JointState{0.0, 0.0, 0.18, 0.0, PI / 2, 0.0},  PITCH, 0,       PI * 0.75, TIME_INTERVAL);
-    joints.emplace_back(3, "forearm",   "wrist",         JointState{0.0, 0.0, 0.20, 0.0, 0.0, 0.0},     PITCH, PI / -2, PI / 2,    TIME_INTERVAL);
-    joints.emplace_back(4, "hand",      "gripper_left",  JointState{0.0, 0.025, 0.025, 0.0, 0.0, 0.0},  Y,     0.033,   0.01,      TIME_INTERVAL);
-    joints.emplace_back(4, "hand",      "gripper_right", JointState{0.0, -0.025, 0.025, 0.0, 0.0, 0.0}, Y,     -0.033,  -0.01,     TIME_INTERVAL);
-    joints.emplace_back(5, "wrist",     "hand",          JointState{0.0, 0.0, 0.06, 0.0, 0.0, 0.0},     YAW,   PI / -2, PI / 2,    TIME_INTERVAL);
+    joints.emplace_back(-1, "odom",      "base_link",     JointState{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},      PITCH, PI / -2, PI / 2,    TIME_INTERVAL);
+    joints.emplace_back(0,  "base_link", "turret",        JointState{0.0, 0.0, 0.045, 0.0, 0.0, 0.0},    YAW,   PI / -2, PI / 2,    TIME_INTERVAL);
+    joints.emplace_back(1,  "turret",    "upperarm",      JointState{0.0, 0.0, 0.02, 0.0, 0.0, 0.0},     PITCH, PI / -3, PI / 2,    TIME_INTERVAL);
+    joints.emplace_back(2,  "upperarm",  "forearm",       JointState{0.0, 0.0, 0.18, 0.0, PI / 2, 0.0},  PITCH, 0,       PI * 0.75, TIME_INTERVAL);
+    joints.emplace_back(3,  "forearm",   "wrist",         JointState{0.0, 0.0, 0.20, 0.0, 0.0, 0.0},     PITCH, PI / -2, PI / 2,    TIME_INTERVAL);
+    joints.emplace_back(4,  "hand",      "gripper_left",  JointState{0.0, 0.025, 0.025, 0.0, 0.0, 0.0},  Y,     0.033,   0.01,      TIME_INTERVAL);
+    joints.emplace_back(4,  "hand",      "gripper_right", JointState{0.0, -0.025, 0.025, 0.0, 0.0, 0.0}, Y,     -0.033,  -0.01,     TIME_INTERVAL);
+    joints.emplace_back(5,  "wrist",     "hand",          JointState{0.0, 0.0, 0.06, 0.0, 0.0, 0.0},     YAW,   PI / -2, PI / 2,    TIME_INTERVAL);
 }
 
 
