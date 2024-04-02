@@ -76,7 +76,7 @@ void StatePublisher::PWM_command_callback(const std_msgs::msg::String & msg)
 {
     std::string command = msg.data;
 
-    if (command == "stop" || command == "Stop")
+    if (command == "stop" || command == "Stop" || command == "STOP")
     {
         for (auto& joint : joints)
         {

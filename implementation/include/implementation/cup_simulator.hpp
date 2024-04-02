@@ -22,6 +22,9 @@ using namespace std::chrono_literals;
 
 
 #define TIME_INTERVAL 33
+#define ALTITUDE_OF_GROUND 0.02
+#define MAXIMUM_DISTANCE_TO_GRIPPER 0.040
+#define MAXIMUM_DISTANCE_BETWEEN_GRIPPERS 0.053
 
 
 struct CupState
@@ -58,6 +61,8 @@ private:
 
     double pythagoreanTheorem(double a, double b, double c);
 
+    void updateFromGripper();
+
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub;
 
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
@@ -67,7 +72,6 @@ private:
 
 
     const double PI = 3.141592653589793238463;
-    const double degree = PI / 180.0;
 
     const double gravitationalAcceleration = 9.81;
     double fallingSpeed;
