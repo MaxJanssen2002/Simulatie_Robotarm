@@ -10,6 +10,7 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "tf2_ros/transform_broadcaster.h"
+#include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
 #include "tf2/LinearMath/Quaternion.h"
 #include "sensor_msgs/msg/joint_state.hpp"
@@ -51,9 +52,16 @@ private:
 
     void gravityUpdate();
 
+    void checkHeldByGripper();
+
+    double pythagoreanTheorem(double a, double b);
+
+    double pythagoreanTheorem(double a, double b, double c);
+
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub;
 
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener;
     std::shared_ptr<tf2_ros::Buffer> tf_buffer;
     rclcpp::TimerBase::SharedPtr timer;
 
@@ -68,10 +76,10 @@ private:
     double time;
 
     geometry_msgs::msg::TransformStamped t;
-    geometry_msgs::msg::TransformStamped received_t;
     tf2::Quaternion q;
 
     CupState state;
+    bool heldByGripper;
 };
 
 

@@ -4,13 +4,17 @@
 
 
 CupSimulator::CupSimulator()
-: Node("cup_simulator"), fallingSpeed(0.0)
+: Node("cup_simulator"), fallingSpeed(0.0), heldByGripper(false)
 {
     joint_sub = this->create_subscription<sensor_msgs::msg::JointState>("/joint_states", 10, std::bind(&CupSimulator::jointStateCallback, this, std::placeholders::_1));
     tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+    tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
     timer = this->create_wall_timer(std::chrono::milliseconds(TIME_INTERVAL), std::bind(&CupSimulator::timer_callback, this));
 
-    state = CupState{0.2, 0.2, 5.0, 0.0, 0.0, 0.0};
+    state = CupState{0.3, 0.3, 5.0, 0.0, 0.0, 0.0};
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 
@@ -27,26 +31,21 @@ void CupSimulator::timer_callback()
 {
     gravityUpdate();
     transform();
+    checkHeldByGripper();
 
-    rclcpp::Time now = this->get_clock()->now();
-
-    received_t = tf_buffer->lookupTransform("base_link", "turret", now);
-
-    RCLCPP_INFO_STREAM(this->get_logger(), std::to_string(received_t.transform.translation.x));
+   
 }
 
 
 void CupSimulator::transform()
 {
     now = this->get_clock()->now();
-    time = now.seconds() * PI;
 
     t.header.stamp = now;
     t.header.frame_id = "odom";
     t.child_frame_id = "cup_base_link";
 
-    t.transform.translation.x = 0.2 * cos(time);
-    //t.transform.translation.x = state.x;
+    t.transform.translation.x = state.x;
     t.transform.translation.y = state.y;
     t.transform.translation.z = state.z;
 
@@ -62,15 +61,54 @@ void CupSimulator::transform()
 
 void CupSimulator::gravityUpdate()
 {
-    if (state.z > 0.0)
+    if (state.z > 0.02)
     {
         fallingSpeed += gravitationalAcceleration / TIME_INTERVAL;
         state.z -= fallingSpeed / TIME_INTERVAL;
 
-        if (state.z <= 0.0)
+        if (state.z <= 0.02)
         {
-            state.z = 0.0;
+            state.z = 0.02;
             fallingSpeed = 0.0;
         }
     }
+}
+
+
+void CupSimulator::checkHeldByGripper()
+{
+    geometry_msgs::msg::TransformStamped left_gripper_position;
+    geometry_msgs::msg::TransformStamped right_gripper_position;
+    left_gripper_position = tf_buffer->lookupTransform("odom", "gripper_left", tf2::TimePointZero);
+    right_gripper_position = tf_buffer->lookupTransform("odom", "gripper_right", tf2::TimePointZero);
+
+    double distanceToLeftGripper = pythagoreanTheorem(left_gripper_position.transform.translation.x - state.x,
+                                                      left_gripper_position.transform.translation.y - state.y,
+                                                      left_gripper_position.transform.translation.z - state.z);
+    double distanceToRightGripper = pythagoreanTheorem(right_gripper_position.transform.translation.x - state.x,
+                                                       right_gripper_position.transform.translation.y - state.y,
+                                                       right_gripper_position.transform.translation.z - state.z);
+    if (distanceToLeftGripper <= 0.04 && 
+        distanceToLeftGripper >= 0.035 && 
+        distanceToRightGripper <= 0.04 &&
+        distanceToRightGripper >= 0.035)
+    {
+        heldByGripper = true;
+    }
+    else
+    {
+        heldByGripper = false;
+    }
+}
+
+
+double CupSimulator::pythagoreanTheorem(double a, double b)
+{
+    return sqrt(a * a + b * b);
+}
+
+
+double CupSimulator::pythagoreanTheorem(double a, double b, double c)
+{
+    return sqrt(a * a + b * b + c * c);
 }

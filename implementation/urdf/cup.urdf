@@ -2,7 +2,7 @@
     <link name="cup_base_link">
 		<visual>
 			<geometry>
-				<cylinder length="0.04" radius="0.02" />
+				<cylinder length="0.04" radius="0.015" />
 			</geometry>
 			<material name="red">
 				<color rgba="1 0 0 1" />
