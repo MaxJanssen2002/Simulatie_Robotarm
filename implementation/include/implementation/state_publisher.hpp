@@ -13,7 +13,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2/LinearMath/Quaternion.h"
-#include "sensor_msgs/msg/joint_state.hpp"
 #include "std_msgs/msg/string.hpp"
 
 
@@ -22,10 +21,6 @@
 
 
 #define TIME_INTERVAL 33
-
-
-using namespace std::chrono_literals;
-
 
 
 class StatePublisher : public rclcpp::Node
@@ -45,7 +40,6 @@ private:
     void PWM_command_callback(const std_msgs::msg::String & msg);
 
     const double PI = 3.141592653589793238463;
-    const double degree = PI / 180.0;
 
     rclcpp::Time now;
     double time;
@@ -53,7 +47,6 @@ private:
     geometry_msgs::msg::TransformStamped t;
     tf2::Quaternion q;
 
-    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_pub;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr commandSubscription;
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     rclcpp::TimerBase::SharedPtr timer;

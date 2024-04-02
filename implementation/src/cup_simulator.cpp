@@ -6,7 +6,6 @@
 CupSimulator::CupSimulator()
 : Node("cup_simulator"), fallingSpeed(0.0), heldByGripper(false)
 {
-    joint_sub = this->create_subscription<sensor_msgs::msg::JointState>("/joint_states", 10, std::bind(&CupSimulator::jointStateCallback, this, std::placeholders::_1));
     tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
     tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
@@ -20,12 +19,6 @@ CupSimulator::CupSimulator()
 
 
 CupSimulator::~CupSimulator() {}
-
-
-void CupSimulator::jointStateCallback(const sensor_msgs::msg::JointState & msg)
-{
-
-}
 
 
 void CupSimulator::timer_callback()
@@ -68,7 +61,7 @@ void CupSimulator::transform()
         t.transform.translation.y = 0.0;
         t.transform.translation.z = 0.04;
 
-        q.setRPY(0.0, 0.5 * PI, 0);
+        q.setRPY(0.0, -0.5 * PI, 0);
         t.transform.rotation.x = q.x();
         t.transform.rotation.y = q.y();
         t.transform.rotation.z = q.z();
@@ -76,8 +69,6 @@ void CupSimulator::transform()
 
         tf_broadcaster->sendTransform(t);
     }
-
-    
 }
 
 
@@ -128,12 +119,6 @@ void CupSimulator::checkHeldByGripper()
     {
         heldByGripper = false;
     }
-}
-
-
-double CupSimulator::pythagoreanTheorem(double a, double b)
-{
-    return sqrt(a * a + b * b);
 }
 
 

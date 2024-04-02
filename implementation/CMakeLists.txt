@@ -54,17 +54,6 @@ ament_target_dependencies(cup_simulator rclcpp)
 target_link_libraries(cup_simulator cup_simulator_libary)
 
 
-# add_executable(tf2_listener src/tf2_listener.cpp)
-# ament_target_dependencies(
-#     tf2_listener
-#     geometry_msgs
-#     rclcpp
-#     tf2
-#     tf2_ros
-#     turtlesim
-# )
-
-
 install(
   DIRECTORY include/
   DESTINATION include/${PROJECT_NAME}/)
@@ -75,9 +64,5 @@ install(TARGETS
    cup_simulator
    DESTINATION lib/${PROJECT_NAME})
 
-
-# install(TARGETS
-#    tf2_listener
-#    DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

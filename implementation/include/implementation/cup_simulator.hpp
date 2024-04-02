@@ -13,12 +13,6 @@
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
 #include "tf2/LinearMath/Quaternion.h"
-#include "sensor_msgs/msg/joint_state.hpp"
-#include "std_msgs/msg/string.hpp"
-
-
-
-using namespace std::chrono_literals;
 
 
 #define TIME_INTERVAL 33
@@ -47,8 +41,6 @@ public:
 
 private:
 
-    void jointStateCallback(const sensor_msgs::msg::JointState & msg);
-
     void timer_callback();
 
     void transform();
@@ -57,13 +49,9 @@ private:
 
     void checkHeldByGripper();
 
-    double pythagoreanTheorem(double a, double b);
-
     double pythagoreanTheorem(double a, double b, double c);
 
     void updateFromGripper();
-
-    rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_sub;
 
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener;
