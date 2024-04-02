@@ -37,7 +37,7 @@ Visualization Manager:
     - Alpha: 0.800000011920929
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
-      Description File: /home/max/Documents/WoR/simulatie/src/implementation/urdf/lynxmotion_arm.urdf
+      Description File: /home/max/Documents/WoR/simulatie/src/src/implementation/urdf/lynxmotion_arm.urdf
       Description Source: File
       Description Topic:
         Depth: 5
@@ -149,7 +149,7 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
-      Description File: /home/max/Documents/WoR/simulatie/src/implementation/urdf/cup.urdf
+      Description File: /home/max/Documents/WoR/simulatie/src/src/implementation/urdf/cup.urdf
       Description Source: File
       Description Topic:
         Depth: 5
