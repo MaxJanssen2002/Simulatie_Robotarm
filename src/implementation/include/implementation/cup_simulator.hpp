@@ -42,16 +42,22 @@ public:
 
 private:
 
+    /// @brief Places the cup on its intial position (based on the configuration)
     void initializePosition();
 
+    /// @brief Loops with an interval that is determined by TIME_INTERVAL
     void timer_callback();
 
+    /// @brief Broadcasts the transform (a.k.a. the position and rotation) of the cup
     void transform();
 
+    /// @brief Makes the cup fall if it is in the air
     void gravityUpdate();
 
+    /// @brief Checks if the cup is held by the gripper of the robot arm
     void checkHeldByGripper();
 
+    /// @brief Adjusts the position of the cup based on the position of the robot arm (only if it is held by the robot arm)
     void updateFromGripper();
 
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;

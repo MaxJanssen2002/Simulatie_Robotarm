@@ -31,14 +31,23 @@ public:
 
 private:
 
+    /// @brief Places the robot arm on its intial position (based on the configuration)
     void initializePosition();
 
+    /// @brief Creates the joints for the robot arm as objects
     void createJoints();
 
+    /// @brief Broadcasts the transform (a.k.a. the position translation and rotation) of a certain joint
+    /// @param header_id The name of the first segment of the joint
+    /// @param child_id The name of the second segment of the joint
+    /// @param jointState The current position translation and rotation of the joint
     void transform(const std::string& header_id, const std::string& child_id, const JointState& jointState);
 
+    /// @brief Loops with an interval that is determined by TIME_INTERVAL
     void timer_callback();
 
+    /// @brief Gets called if there is an incoming message from /arm_command, which should be a SSC-32U formatted command
+    /// @param msg The incoming message
     void PWM_command_callback(const std_msgs::msg::String & msg);
 
     rclcpp::Time now;
