@@ -17,7 +17,6 @@ def generate_launch_description():
     default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf.rviz')
 
     robot_arm_urdf = os.path.join(get_package_share_directory('implementation'), 'urdf/lynxmotion_arm.urdf')
-    cup_urdf = os.path.join(get_package_share_directory('implementation'), 'urdf/cup.urdf')
 
     return LaunchDescription([
         DeclareLaunchArgument('use_sim_time', default_value='false', description='Use simulation (Gazebo) clock if true'),
