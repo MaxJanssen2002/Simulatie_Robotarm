@@ -1,5 +1,5 @@
 #include "implementation/state_publisher.hpp"
-#include "implementation/mathUtils.hpp"
+#include "implementation/math_utils.hpp"
 
 #include <sstream>
 #include <algorithm>
@@ -12,6 +12,7 @@ StatePublisher::StatePublisher()
     tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(this);
     timer = this->create_wall_timer(std::chrono::milliseconds(TIME_INTERVAL), std::bind(&StatePublisher::timer_callback, this));
 
+    initializePosition();
     createJoints();
 }
 
@@ -19,9 +20,33 @@ StatePublisher::StatePublisher()
 StatePublisher::~StatePublisher() {}
 
 
+void StatePublisher::initializePosition()
+{
+    this->declare_parameter<double>("x", 0.0);
+    this->declare_parameter<double>("y", 0.0);
+    this->declare_parameter<double>("z", 0.0);
+    this->declare_parameter<double>("roll", 0.0);
+    this->declare_parameter<double>("pitch", 0.0);
+    this->declare_parameter<double>("yaw", 0.0);
+
+    double initialX = this->get_parameter("x").get_parameter_value().get<double>();
+    double initialY = this->get_parameter("y").get_parameter_value().get<double>();
+    double initialZ = this->get_parameter("z").get_parameter_value().get<double>();
+    double initialRoll = this->get_parameter("roll").get_parameter_value().get<double>();
+    double initialPitch = this->get_parameter("pitch").get_parameter_value().get<double>();
+    double initialYaw = this->get_parameter("yaw").get_parameter_value().get<double>();
+
+    joints.emplace_back(-1, "odom", "base_link", JointState{initialX, initialY, initialZ, initialRoll, initialPitch, initialYaw}, PITCH, initialYaw, initialYaw, TIME_INTERVAL);
+    
+    for (Joint& joint : joints)
+    {
+        transform(joint.getHeader_id(), joint.getChild_id(), joint.getJointState());
+    }
+}
+
+
 void StatePublisher::createJoints()
 {
-    joints.emplace_back(-1, "odom",      "base_link",     JointState{0.0, 0.0, 0.0, 0.0, 0.0, 0.0},      PITCH, PI / -2, PI / 2,    TIME_INTERVAL);
     joints.emplace_back(0,  "base_link", "turret",        JointState{0.0, 0.0, 0.045, 0.0, 0.0, 0.0},    YAW,   PI / -2, PI / 2,    TIME_INTERVAL);
     joints.emplace_back(1,  "turret",    "upperarm",      JointState{0.0, 0.0, 0.02, 0.0, 0.0, 0.0},     PITCH, PI / -3, PI / 2,    TIME_INTERVAL);
     joints.emplace_back(2,  "upperarm",  "forearm",       JointState{0.0, 0.0, 0.18, 0.0, PI / 2, 0.0},  PITCH, 0,       PI * 0.75, TIME_INTERVAL);
@@ -56,9 +81,6 @@ void StatePublisher::transform(const std::string& header_id, const std::string& 
 
 void StatePublisher::timer_callback()
 {
-    now = this->get_clock()->now();
-    time = now.seconds() * PI;
-
     for (Joint& joint : joints)
     {
         joint.move();

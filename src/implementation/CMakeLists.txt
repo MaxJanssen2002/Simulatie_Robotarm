@@ -32,7 +32,7 @@ ament_target_dependencies(
    rclcpp
    tf2_ros)
 
-add_executable(state_publisher src/state_publisher_node.cpp src/joint.cpp src/parser.cpp src/mathUtils.cpp)
+add_executable(state_publisher src/state_publisher_node.cpp src/joint.cpp src/parser.cpp src/math_utils.cpp)
 ament_target_dependencies(state_publisher rclcpp)
 
 target_link_libraries(state_publisher state_publisher_library)
@@ -48,7 +48,7 @@ ament_target_dependencies(
    rclcpp
    tf2_ros)
 
-add_executable(cup_simulator src/cup_simulator_node.cpp src/mathUtils.cpp)
+add_executable(cup_simulator src/cup_simulator_node.cpp src/math_utils.cpp)
 ament_target_dependencies(cup_simulator rclcpp)
 
 target_link_libraries(cup_simulator cup_simulator_libary)

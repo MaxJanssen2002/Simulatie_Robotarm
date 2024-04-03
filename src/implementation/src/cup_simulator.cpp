@@ -1,5 +1,5 @@
 #include "implementation/cup_simulator.hpp"
-#include "implementation/mathUtils.hpp"
+#include "implementation/math_utils.hpp"
 
 
 CupSimulator::CupSimulator()
@@ -10,14 +10,34 @@ CupSimulator::CupSimulator()
     tf_listener = std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
     timer = this->create_wall_timer(std::chrono::milliseconds(TIME_INTERVAL), std::bind(&CupSimulator::timer_callback, this));
 
-    state = CupState{0.3, 0.3, 5.0, 0.0, 0.0, 0.0};
-    transform();
+    initializePosition();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Wait for robotmodel before using lookupTransform
 }
 
 
 CupSimulator::~CupSimulator() {}
+
+
+void CupSimulator::initializePosition()
+{
+    this->declare_parameter<double>("x", 0.0);
+    this->declare_parameter<double>("y", 0.0);
+    this->declare_parameter<double>("z", 0.0);
+    this->declare_parameter<double>("roll", 0.0);
+    this->declare_parameter<double>("pitch", 0.0);
+    this->declare_parameter<double>("yaw", 0.0);
+    
+    double initialX = this->get_parameter("x").get_parameter_value().get<double>();
+    double initialY = this->get_parameter("y").get_parameter_value().get<double>();
+    double initialZ = this->get_parameter("z").get_parameter_value().get<double>();
+    double initialRoll = this->get_parameter("roll").get_parameter_value().get<double>();
+    double initialPitch = this->get_parameter("pitch").get_parameter_value().get<double>();
+    double initialYaw = this->get_parameter("yaw").get_parameter_value().get<double>();
+
+    state = CupState{initialX, initialY, initialZ, initialRoll, initialPitch, initialYaw};
+    transform();
+}
 
 
 void CupSimulator::timer_callback()
@@ -75,18 +95,18 @@ void CupSimulator::gravityUpdate()
 {
     if (state.z > ALTITUDE_OF_GROUND && !heldByGripper)
     {
-        fallingSpeed += gravitationalAcceleration / TIME_INTERVAL;
+        fallingSpeed += GRAVITATIONAL_ACCELERATION / TIME_INTERVAL;
         state.z -= fallingSpeed / TIME_INTERVAL;
+    }
 
-        if (state.z <= ALTITUDE_OF_GROUND)
-        {
-            state.z = ALTITUDE_OF_GROUND;
-            fallingSpeed = 0.0;
+    if (state.z <= ALTITUDE_OF_GROUND)
+    {
+        state.z = ALTITUDE_OF_GROUND;
+        fallingSpeed = 0.0;
 
-            state.roll = 0.0;
-            state.pitch = 0.0;
-            state.yaw = 0.0;
-        }
+        state.roll = 0.0;
+        state.pitch = 0.0;
+        state.yaw = 0.0;
     }
 }
 

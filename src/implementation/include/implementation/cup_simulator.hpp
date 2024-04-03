@@ -16,6 +16,7 @@
 
 
 #define TIME_INTERVAL 33
+#define GRAVITATIONAL_ACCELERATION 9.81
 #define ALTITUDE_OF_GROUND 0.02
 #define MAXIMUM_DISTANCE_TO_GRIPPER 0.040
 #define MAXIMUM_DISTANCE_BETWEEN_GRIPPERS 0.053
@@ -41,6 +42,8 @@ public:
 
 private:
 
+    void initializePosition();
+
     void timer_callback();
 
     void transform();
@@ -56,7 +59,6 @@ private:
     std::shared_ptr<tf2_ros::Buffer> tf_buffer;
     rclcpp::TimerBase::SharedPtr timer;
 
-    const double gravitationalAcceleration = 9.81;
     double fallingSpeed;
 
     rclcpp::Time now;

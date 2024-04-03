@@ -31,6 +31,8 @@ public:
 
 private:
 
+    void initializePosition();
+
     void createJoints();
 
     void transform(const std::string& header_id, const std::string& child_id, const JointState& jointState);

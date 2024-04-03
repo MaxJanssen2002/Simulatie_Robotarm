@@ -35,15 +35,28 @@ def generate_launch_description():
             executable='state_publisher',
             name='state_publisher',
             output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
+            parameters=[{'use_sim_time': use_sim_time,
+                         'x' : 0.0,
+                         'y' : 0.0,
+                         'z' : 0.0,
+                         'roll' : 0.0,
+                         'pitch' : 0.0,
+                         'yaw' : 0.0
+                        }],
             ),
         Node(
             package='implementation',
             executable='cup_simulator',
             name='cup_simulator',
             output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
-           
+            parameters=[{'use_sim_time': use_sim_time,
+                         'x' : 0.3,
+                         'y' : 0.3,
+                         'z' : 5.0,
+                         'roll' : 0.0,
+                         'pitch' : 0.0,
+                         'yaw' : 0.0
+                        }],
             ),
         Node(
             package='rviz2',

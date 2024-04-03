@@ -1,4 +1,4 @@
-#include "implementation/mathUtils.hpp"
+#include "implementation/math_utils.hpp"
 
 #include <cmath>
 
